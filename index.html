@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>MonCoach Nutrition</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{background:#0f1a0f;color:#d4ecd4;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+:root{--bg:#0f1a0f;--bg2:#162016;--bg3:#1e2a1e;--border:#2a3d2a;--green:#6fcf7a;--green2:#4a9a54;--text:#d4ecd4;--text2:#8aaa8a;--text3:#4a6a4a}
+header{background:var(--bg2);border-bottom:1px solid var(--border);padding:13px 16px 11px;flex-shrink:0}
+.hrow{display:flex;align-items:center;justify-content:space-between}
+.title{font-size:18px;font-weight:800;color:var(--green)}
+.sub{font-size:10px;color:var(--text3);margin-top:2px}
+.wbadge{background:var(--bg3);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--text2);cursor:pointer}
+nav{display:flex;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto}
+nav::-webkit-scrollbar{display:none}
+.nb{flex:1;min-width:52px;padding:9px 4px 7px;border:none;background:transparent;font-size:10px;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+.nb .ni{font-size:18px}
+.nb.on{color:var(--green);border-bottom-color:var(--green);font-weight:700}
+.page{display:none;padding:12px 14px;overflow-y:auto;flex:1}
+.page.on{display:block}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;overflow:hidden}
+.cp{padding:14px}
+.stitle{font-size:12px;font-weight:700;color:var(--text2);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px}
+.btn{width:100%;padding:13px;margin-bottom:8px;background:var(--green2);border:none;border-radius:11px;color:#fff;font-size:14px;font-weight:700;cursor:pointer}
+.btn.blue{background:#2a5a8a}
+.btn.outline{background:transparent;border:1px solid var(--border);color:var(--text2)}
+.btn:disabled{opacity:.5;cursor:default}
+.chip{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:10px;margin-bottom:8px;cursor:pointer}
+.chip span{font-size:13px;color:var(--text)}
+.chip .arr{font-size:16px;color:var(--text3)}
+input,textarea{width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:13px;outline:none;font-family:inherit;margin-bottom:8px}
+textarea{resize:none;line-height:1.5}
+.row{display:flex;gap:8px}
+.row>div{flex:1}
+.lbl{font-size:11px;color:var(--text3);margin-bottom:5px}
+.tag{display:inline-block;padding:5px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:14px;font-size:12px;color:var(--text2);cursor:pointer;margin:0 6px 6px 0}
+.tag.on{background:#1a3a1e;border-color:var(--green2);color:var(--green)}
+.guide-tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto}
+.guide-tabs::-webkit-scrollbar{display:none}
+.gtab{padding:7px 14px;background:var(--bg3);border:1px solid var(--border);border-radius:16px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap;flex-shrink:0}
+.gtab.on{background:#1a3a1e;border-color:var(--green2);color:var(--green);font-weight:700}
+.gc{background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:13px;margin-bottom:8px}
+.gc-t{font-size:13px;font-weight:700;color:var(--text);margin-bottom:6px}
+.gc-b{font-size:12px;color:var(--text2);line-height:1.7}
+.rl{display:flex;align-items:flex-start;gap:8px;padding:8px 0;border-bottom:1px solid var(--bg3)}
+.rn{font-size:11px;color:var(--text3);font-weight:600;width:65px;flex-shrink:0;padding-top:2px}
+.rd{font-size:13px;color:var(--text);flex:1;line-height:1.4}
+.rd.empty{color:var(--text3);font-style:italic}
+.redit{font-size:16px;cursor:pointer;background:none;border:none;color:var(--text3);flex-shrink:0}
+.jcard{background:var(--bg2);border:1px solid var(--border);border-radius:11px;margin-bottom:8px;overflow:hidden}
+.jhdr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;cursor:pointer}
+.jnom{font-size:13px;font-weight:700;color:var(--text)}
+.today-badge{font-size:10px;background:#1a3a1e;color:var(--green);padding:2px 7px;border-radius:8px;margin-left:6px}
+.jbody{padding:0 14px 12px;display:none}
+.jbody.on{display:block}
+.ci{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--bg3)}
+.cbox{width:22px;height:22px;border-radius:6px;border:2px solid var(--border);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;transition:all .15s}
+.cbox.on{background:var(--green2);border-color:var(--green2)}
+.cnom{font-size:13px;color:var(--text);flex:1}
+.cnom.done{color:var(--text3);text-decoration:line-through}
+.ccons{font-size:10px;color:var(--text3)}
+.categ-t{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.categ{margin-bottom:16px}
+.pval{font-size:60px;font-weight:800;color:var(--green);line-height:1;text-align:center}
+.punit{font-size:16px;color:var(--text3);text-align:center;margin-top:4px}
+.pobj{font-size:12px;color:var(--text2);text-align:center;margin-top:10px}
+.pdelta{font-size:14px;font-weight:700;text-align:center;margin-top:4px}
+.pinput-row{display:flex;gap:8px;margin-top:16px}
+.pinput-row input{flex:1;font-size:18px;font-weight:700;text-align:center;margin-bottom:0}
+.pinput-row button{padding:12px 18px;background:var(--green2);border:none;border-radius:10px;color:#fff;font-size:15px;font-weight:700;cursor:pointer}
+.ph-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--bg3);font-size:12px}
+.ph-date{color:var(--text2)}
+.ph-val{font-weight:700;color:var(--green)}
+.tip{padding:10px 12px;background:var(--bg3);border-left:3px solid var(--green2);border-radius:0 8px 8px 0;font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:12px}
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:100;display:flex;align-items:flex-end}
+.modal-bg.hidden{display:none}
+.modal{background:var(--bg2);border:1px solid var(--border);border-radius:16px 16px 0 0;padding:20px;width:100%}
+.modal-t{font-size:15px;font-weight:700;color:var(--text);margin-bottom:14px}
+.modal-btns{display:flex;gap:8px;margin-top:12px}
+.mok{flex:1;padding:11px;background:var(--green2);border:none;border-radius:8px;color:#fff;font-weight:700;font-size:13px;cursor:pointer}
+.mcancel{flex:1;padding:11px;background:var(--bg3);border:1px solid var(--border);border-radius:8px;color:var(--text2);font-size:13px;cursor:pointer}
+.hidden{display:none!important}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hrow">
+    <div>
+      <div class="title">🥗 MonCoach Nutrition</div>
+      <div class="sub" id="sub-title">Ton coach personnel pour perdre du poids</div>
+    </div>
+    <div class="wbadge" id="poids-badge" onclick="showPage('poids')">⚖️ — kg</div>
+  </div>
+</header>
+
+<nav>
+  <button class="nb on" data-p="coach" onclick="showPage('coach')"><span class="ni">💬</span>Coach</button>
+  <button class="nb" data-p="semaine" onclick="showPage('semaine')"><span class="ni">📅</span>Semaine</button>
+  <button class="nb" data-p="courses" onclick="showPage('courses')"><span class="ni">🛒</span>Courses</button>
+  <button class="nb" data-p="guide" onclick="showPage('guide')"><span class="ni">🍎</span>Guide</button>
+  <button class="nb" data-p="poids" onclick="showPage('poids')"><span class="ni">⚖️</span>Poids</button>
+  <button class="nb" data-p="profil" onclick="showPage('profil')"><span class="ni">👤</span>Profil</button>
+</nav>
+
+<!-- COACH -->
+<div class="page on" id="page-coach">
+  <div class="card cp" style="text-align:center;margin-bottom:16px">
+    <div style="font-size:44px;margin-bottom:12px">🥗</div>
+    <div style="font-size:16px;font-weight:800;color:#d4ecd4;margin-bottom:8px" id="coach-hello">Bonjour !</div>
+    <div style="font-size:13px;color:#8aaa8a;line-height:1.6;margin-bottom:16px">Je suis ton coach nutrition. Clique sur une question — je t'ouvre directement dans Claude pour te répondre !</div>
+    <button class="btn blue" onclick="openCoach('')">💬 Ouvrir mon coach IA</button>
+  </div>
+  <div class="stitle">Questions fréquentes</div>
+  <div id="chips-container"></div>
+  <div class="tip">💡 Chaque bouton ouvre Claude avec ta question déjà écrite. Tu n'as qu'à envoyer !</div>
+</div>
+
+<!-- SEMAINE -->
+<div class="page" id="page-semaine">
+  <div class="stitle">📅 Mon planning semaine</div>
+  <div id="week-grid"></div>
+  <button class="btn" onclick="analyserSemaine()">🔍 Analyser toute ma semaine</button>
+</div>
+
+<!-- COURSES -->
+<div class="page" id="page-courses">
+  <div class="stitle">🛒 Liste de courses</div>
+  <div style="display:flex;gap:8px;margin-bottom:14px">
+    <button class="btn" style="margin-bottom:0" onclick="genCourses()">✨ Générer avec le coach</button>
+    <button class="btn outline" style="margin-bottom:0;width:auto;padding:11px 14px" onclick="resetCourses()">🔄</button>
+  </div>
+  <div id="courses-list"></div>
+  <div class="tip">💡 "Générer avec le coach" ouvre Claude avec tes menus pour une liste personnalisée</div>
+</div>
+
+<!-- GUIDE -->
+<div class="page" id="page-guide">
+  <div class="stitle">🍎 Guide alimentation saine</div>
+  <div class="guide-tabs">
+    <div class="gtab on" onclick="switchGuide('fruits',this)">🍓 Fruits</div>
+    <div class="gtab" onclick="switchGuide('desserts',this)">🍰 Desserts</div>
+    <div class="gtab" onclick="switchGuide('timing',this)">⏰ Timing</div>
+    <div class="gtab" onclick="switchGuide('astuces',this)">💡 Astuces</div>
+  </div>
+  <div id="guide-content"></div>
+  <button class="btn blue" onclick="openCoach('J\'ai une question sur mon alimentation pour perdre du poids')">💬 Poser une question au coach</button>
+</div>
+
+<!-- POIDS -->
+<div class="page" id="page-poids">
+  <div class="stitle">⚖️ Suivi de poids</div>
+  <div class="card cp">
+    <div class="pval" id="pval">—</div>
+    <div class="punit">kg</div>
+    <div class="pobj" id="pobj"></div>
+    <div class="pdelta" id="pdelta"></div>
+    <div class="pinput-row">
+      <input type="number" step="0.1" id="poids-in" placeholder="ex: 71.5"/>
+      <button onclick="savePoids()">✓</button>
+    </div>
+  </div>
+  <div class="card cp hidden" id="chart-card">
+    <div class="stitle">📈 Évolution</div>
+    <svg id="poids-svg" viewBox="0 0 300 90" style="width:100%;height:90px"></svg>
+    <div id="chart-labels" style="display:flex;justify-content:space-between;margin-top:6px"></div>
+    <div id="perte-info" style="text-align:center;font-size:13px;font-weight:700;margin-top:12px"></div>
+  </div>
+  <div class="card cp hidden" id="history-card">
+    <div class="stitle">📋 Historique</div>
+    <div id="poids-history"></div>
+  </div>
+  <button class="btn blue" onclick="bilanPoids()">💬 Demander un bilan au coach</button>
+</div>
+
+<!-- PROFIL -->
+<div class="page" id="page-profil">
+  <div class="stitle">👤 Mon profil</div>
+  <div class="card cp">
+    <div class="stitle">Mes infos</div>
+    <div class="row">
+      <div><div class="lbl">Prénom</div><input id="p-prenom" placeholder="ex: Sophie"/></div>
+      <div><div class="lbl">Poids (kg)</div><input id="p-poids" type="number" placeholder="ex: 103"/></div>
+    </div>
+    <div class="lbl">Objectif (kg)</div>
+    <input id="p-obj" type="number" placeholder="ex: 85"/>
+  </div>
+  <div class="card cp">
+    <div class="stitle">Mes goûts</div>
+    <div class="lbl">J'aime cuisiner</div>
+    <div id="tags-cuisine" style="margin-bottom:12px"></div>
+    <div class="lbl">Restrictions</div>
+    <div id="tags-restrict"></div>
+  </div>
+  <div class="card cp">
+    <div class="stitle">Mes menus habituels</div>
+    <textarea id="p-menus" rows="4" placeholder="ex: soupe de légumes, risotto au Thermomix, gâteau au yaourt, compote maison..."></textarea>
+  </div>
+  <button class="btn" onclick="saveProfil()">✓ Sauvegarder mon profil</button>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg hidden" id="modal">
+  <div class="modal">
+    <div class="modal-t" id="modal-title">Modifier le repas</div>
+    <textarea id="modal-ta" rows="3" placeholder="Décris ce que tu as mangé ou prévu…"></textarea>
+    <div class="modal-btns">
+      <button class="mcancel" onclick="closeModal()">Annuler</button>
+      <button class="mok" onclick="saveRepas()">✓ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DONNÉES ────────────────────────────────────────────────────
+const JOURS=["Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi","Dimanche"];
+const REPAS=[{k:"matin",l:"🌅 Matin"},{k:"midi",l:"☀️ Midi"},{k:"gouter",l:"🍎 Goûter"},{k:"soir",l:"🌙 Soir"}];
+const CHIPS=["Comment varier mon petit-déjeuner ?","Que dois-je acheter cette semaine ?","Mon dessert maison est-il ok ?","Quels fruits privilégier ?","J'ai envie de craquer, que faire ?","Conseil pour perdre du poids","Analyse mon menu du jour"];
+const CUISINE_TAGS=["Plats mijotés","Desserts maison","Légumes","Poisson","Soupes","Salades","Grillades"];
+const RESTRICT_TAGS=["Sans gluten","Sans lactose","Végétarien","Peu de sucre","Diabète"];
+const GUIDE={
+  fruits:[
+    {t:"🟢 À privilégier",b:"🍓 Fraises · 🫐 Myrtilles · 🥝 Kiwi · 🍋 Citron · 🍈 Melon\n\nPeu sucrés, riches en fibres. À manger le matin ou avant 16h."},
+    {t:"🟡 Avec modération",b:"🍌 Banane · 🍇 Raisins · 🍊 Orange · 🍑 Pêche\n\nPlus sucrés. 1 fruit par jour max. Éviter le soir."},
+    {t:"💡 Le bon moment",b:"✅ Matin : idéal\n✅ Goûter 16h : parfait\n⚠️ Après repas : mieux séparé\n❌ Le soir : stockage facilité"},
+  ],
+  desserts:[
+    {t:"🍰 Comment alléger",b:"Sucre : réduis de 30%, remplace par compote de pomme.\nBeurre : remplace par yaourt grec ou fromage blanc 0%.\nFarine : utilise 50% farine complète."},
+    {t:"✅ Desserts à privilégier",b:"🍮 Yaourt + fruits frais\n🍧 Sorbet maison (fruits mixés)\n🎂 Gâteau au yaourt allégé\n🍮 Fromage blanc + miel + noix"},
+    {t:"⏰ Quand en manger ?",b:"✅ Après le déjeuner : meilleur moment\n✅ Goûter 16h : évite les fringales\n❌ Après le dîner : stockage nocturne"},
+  ],
+  timing:[
+    {t:"🌅 Petit-déjeuner (7h-9h)",b:"Repas le plus important.\n✅ Œufs, fromage blanc, pain complet, fruits"},
+    {t:"☀️ Déjeuner (12h-13h)",b:"Repas principal. ½ légumes · ¼ protéines · ¼ féculents.\n✅ Plats mijotés, viande ou poisson + légumes"},
+    {t:"🍎 Goûter (16h)",b:"Évite les craquages du soir.\n✅ 1 fruit + yaourt, amandes, carré chocolat noir"},
+    {t:"🌙 Dîner (19h-20h)",b:"Plus léger. Peu de féculents.\n✅ Soupe, poisson, omelette, légumes\n❌ Pâtes, riz, pain en excès"},
+  ],
+  astuces:[
+    {t:"💧 L'eau avant les repas",b:"1 grand verre avant chaque repas réduit la faim de 20%. Objectif : 1,5L à 2L par jour."},
+    {t:"🍽️ L'assiette idéale",b:"½ légumes · ¼ protéines · ¼ féculents\n\nSimple à visualiser, efficace sans compter les calories."},
+    {t:"🧠 Manger lentement",b:"Le cerveau met 20 min à ressentir la satiété. Pose les couverts entre chaque bouchée."},
+    {t:"😴 Dormir pour maigrir",b:"Le manque de sommeil augmente la faim de 25%. Vise 7 à 8h par nuit."},
+  ]
+};
+const COURSES_DEFAULT=[
+  {cat:"🥦 Légumes",items:[{n:"Courgettes",c:"",done:false},{n:"Brocolis",c:"",done:false},{n:"Épinards",c:"",done:false},{n:"Tomates",c:"",done:false},{n:"Carottes",c:"",done:false}]},
+  {cat:"🍗 Protéines",items:[{n:"Poulet (filets)",c:"",done:false},{n:"Saumon",c:"",done:false},{n:"Œufs",c:"",done:false},{n:"Thon en boîte",c:"",done:false}]},
+  {cat:"🥛 Laitages",items:[{n:"Yaourt nature 0%",c:"",done:false},{n:"Fromage blanc 0%",c:"",done:false}]},
+  {cat:"🍎 Fruits",items:[{n:"Fraises ou myrtilles",c:"Riches en fibres",done:false},{n:"Kiwi",c:"Vitamine C",done:false},{n:"Pommes",c:"",done:false}]},
+  {cat:"🌾 Féculents",items:[{n:"Riz complet",c:"Préférer complet",done:false},{n:"Pain complet",c:"",done:false},{n:"Flocons d'avoine",c:"Pour le matin",done:false}]},
+];
+
+// ── ÉTAT ────────────────────────────────────────────────────────
+let state={profil:{prenom:"",poids:"",objectif:"",menus:"",cuisine:[],restrict:[]},semaine:{},poidsLog:{},courses:JSON.parse(JSON.stringify(COURSES_DEFAULT))};
+let modalJour="",modalRepas="",guideTab="fruits";
+const todayI=(()=>{const d=new Date().getDay();return d===0?6:d-1;})();
+
+function load(){try{const d=JSON.parse(localStorage.getItem("mc6")||"{}");if(d.profil)state.profil=d.profil;if(d.semaine)state.semaine=d.semaine;if(d.poidsLog)state.poidsLog=d.poidsLog;if(d.courses)state.courses=d.courses;}catch(e){}}
+function save(){try{localStorage.setItem("mc6",JSON.stringify(state));}catch(e){}}
+
+// ── NAVIGATION ─────────────────────────────────────────────────
+function showPage(p){
+  document.querySelectorAll(".page").forEach(e=>e.classList.remove("on"));
+  document.querySelectorAll(".nb").forEach(e=>e.classList.remove("on"));
+  document.getElementById("page-"+p).classList.add("on");
+  document.querySelector('[data-p="'+p+'"]').classList.add("on");
+  if(p==="semaine")renderSemaine();
+  if(p==="courses")renderCourses();
+  if(p==="poids")renderPoids();
+  if(p==="profil")loadProfil();
+  if(p==="guide")renderGuide();
+}
+
+// ── COACH ──────────────────────────────────────────────────────
+function openCoach(q){
+  const prenom=state.profil.prenom?"Bonjour je m'appelle "+state.profil.prenom+". ":"";
+  const poids=state.profil.poids&&state.profil.objectif?"Mon poids actuel est "+state.profil.poids+"kg et mon objectif est "+state.profil.objectif+"kg. ":"";
+  const menus=state.profil.menus?"Mes plats habituels : "+state.profil.menus+". ":"";
+  const contexte=prenom+poids+menus;
+  const msg=contexte+(q||"J'ai besoin de conseils nutrition pour perdre du poids.");
+  window.open("https://claude.ai/new?q="+encodeURIComponent(msg),"_blank");
+}
+
+function initCoach(){
+  const p=state.profil.prenom;
+  document.getElementById("coach-hello").textContent=p?"Bonjour "+p+" !":"Bonjour !";
+  const c=document.getElementById("chips-container");
+  c.innerHTML=CHIPS.map(q=>`<div class="chip" onclick="openCoach('${q.replace(/'/g,"\\'")}')"><span>${q}</span><span class="arr">›</span></div>`).join("");
+}
+
+// ── SEMAINE ────────────────────────────────────────────────────
+function renderSemaine(){
+  const g=document.getElementById("week-grid");
+  g.innerHTML=JOURS.map((j,i)=>{
+    const k="j"+i,r=state.semaine[k]||{},isT=i===todayI;
+    const rlines=REPAS.map(rt=>`<div class="rl"><div class="rn">${rt.l}</div><div class="rd ${r[rt.k]?"":"empty"}">${r[rt.k]||"Non planifié"}</div><button class="redit" onclick="openModal('${k}','${rt.k}','${rt.l} — ${j}')">✏️</button></div>`).join("");
+    const hasContent=REPAS.some(rt=>r[rt.k]);
+    return`<div class="jcard"><div class="jhdr" onclick="toggleJour('jb-${k}')"><span class="jnom">${j}${isT?'<span class="today-badge">Aujourd\'hui</span>':""}</span><span style="color:var(--text3);font-size:12px" id="jarr-${k}">${isT?"▲":"▼"}</span></div><div class="jbody ${isT?"on":""}" id="jb-${k}">${rlines}<button class="btn blue" style="margin-top:10px;padding:9px;font-size:12px" onclick="openCoach('Analyse mes repas de ${j} : ${REPAS.map(rt=>r[rt.k]?rt.l+": "+r[rt.k]:"").filter(Boolean).join(", ")||"non renseignés"}')">💬 Analyser cette journée</button></div></div>`;
+  }).join("");
+}
+
+function toggleJour(id){
+  const b=document.getElementById(id);
+  b.classList.toggle("on");
+}
+
+function analyserSemaine(){
+  const lignes=JOURS.map((j,i)=>{const k="j"+i;const r=state.semaine[k]||{};const rep=REPAS.map(rt=>r[rt.k]?rt.l+": "+r[rt.k]:"").filter(Boolean).join(", ");return rep?j+" — "+rep:"";}).filter(Boolean).join(" / ");
+  openCoach("Analyse ma semaine alimentaire pour la perte de poids : "+(lignes||"non renseignée")+". Donne-moi un bilan, les points positifs, ce à améliorer et un conseil pour la semaine prochaine.");
+}
+
+// ── MODAL ──────────────────────────────────────────────────────
+function openModal(jour,repas,titre){
+  modalJour=jour;modalRepas=repas;
+  document.getElementById("modal-title").textContent="✏️ "+titre;
+  document.getElementById("modal-ta").value=(state.semaine[jour]||{})[repas]||"";
+  document.getElementById("modal").classList.remove("hidden");
+  setTimeout(()=>document.getElementById("modal-ta").focus(),100);
+}
+function closeModal(){document.getElementById("modal").classList.add("hidden");}
+function saveRepas(){
+  if(!state.semaine[modalJour])state.semaine[modalJour]={};
+  state.semaine[modalJour][modalRepas]=document.getElementById("modal-ta").value;
+  save();closeModal();renderSemaine();
+}
+
+// ── COURSES ────────────────────────────────────────────────────
+function renderCourses(){
+  const c=document.getElementById("courses-list");
+  c.innerHTML=state.courses.map((cat,ci)=>`<div class="categ"><div class="categ-t">${cat.cat}</div>${cat.items.map((it,ii)=>`<div class="ci"><div class="cbox ${it.done?"on":""}" onclick="toggleC(${ci},${ii})">${it.done?"✓":""}</div><div class="cnom ${it.done?"done":""}">${it.n}${it.c?`<br><span class="ccons">${it.c}</span>`:""}</div></div>`).join("")}</div>`).join("");
+}
+function toggleC(ci,ii){
+  state.courses[ci].items[ii].done=!state.courses[ci].items[ii].done;
+  save();renderCourses();
+}
+function resetCourses(){
+  state.courses=JSON.parse(JSON.stringify(COURSES_DEFAULT));
+  save();renderCourses();
+}
+function genCourses(){
+  const menus=Object.values(state.semaine).map(j=>REPAS.map(r=>j[r.k]).filter(Boolean).join(", ")).filter(Boolean).join("; ");
+  openCoach("Génère-moi une liste de courses équilibrée pour perdre du poids cette semaine."+(menus?" Mes menus prévus : "+menus:"")+(state.profil.menus?" Mes plats habituels : "+state.profil.menus:""));
+}
+
+// ── GUIDE ──────────────────────────────────────────────────────
+function renderGuide(){
+  const c=document.getElementById("guide-content");
+  const items=GUIDE[guideTab]||[];
+  c.innerHTML=items.map(item=>`<div class="gc"><div class="gc-t">${item.t}</div><div class="gc-b">${item.b.replace(/\n/g,"<br/>")}</div></div>`).join("");
+}
+function switchGuide(tab,el){
+  guideTab=tab;
+  document.querySelectorAll(".gtab").forEach(e=>e.classList.remove("on"));
+  el.classList.add("on");
+  renderGuide();
+}
+
+// ── POIDS ──────────────────────────────────────────────────────
+function savePoids(){
+  const v=parseFloat(document.getElementById("poids-in").value);
+  if(!v)return;
+  const today=new Date().toISOString().slice(0,10);
+  state.poidsLog[today]=v;
+  state.profil.poids=String(v);
+  document.getElementById("poids-in").value="";
+  save();renderPoids();
+  document.getElementById("poids-badge").textContent="⚖️ "+v+" kg";
+}
+
+function renderPoids(){
+  const pe=Object.entries(state.poidsLog).sort((a,b)=>a[0].localeCompare(b[0]));
+  const latest=pe.length?pe[pe.length-1][1]:null;
+  const obj=parseFloat(state.profil.objectif)||null;
+  document.getElementById("pval").textContent=latest||"—";
+  if(obj)document.getElementById("pobj").textContent="Objectif : "+obj+" kg";
+  if(latest&&obj){
+    const reste=(latest-obj).toFixed(1);
+    const el=document.getElementById("pdelta");
+    if(latest<=obj){el.textContent="🎉 Objectif atteint !";el.style.color="var(--green)";}
+    else{el.textContent="Reste : "+reste+" kg";el.style.color="#e8a94a";}
+  }
+  if(latest)document.getElementById("poids-badge").textContent="⚖️ "+latest+" kg";
+
+  if(pe.length<2){document.getElementById("chart-card").classList.add("hidden");document.getElementById("history-card").classList.add("hidden");return;}
+  document.getElementById("chart-card").classList.remove("hidden");
+  document.getElementById("history-card").classList.remove("hidden");
+
+  // SVG
+  const vals=pe.map(e=>e[1]);
+  const mn=Math.min(...vals)-0.5,mx=Math.max(...vals)+0.5;
+  const recent=pe.slice(-10);
+  const pts=recent.map(([,v],i,a)=>({x:(i/(a.length-1||1))*280+10,y:85-((v-mn)/(mx-mn||1))*80}));
+  const path=pts.map((p,i)=>(i===0?"M":"L")+p.x+","+p.y).join(" ");
+  document.getElementById("poids-svg").innerHTML=`<defs><linearGradient id="g1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#4a9a54" stop-opacity=".3"/><stop offset="100%" stop-color="#4a9a54" stop-opacity="0"/></linearGradient></defs><path d="${path} L${pts[pts.length-1].x},90 L${pts[0].x},90 Z" fill="url(#g1)"/><path d="${path}" fill="none" stroke="#6fcf7a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>${pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="3.5" fill="#6fcf7a"/>`).join("")}`;
+  document.getElementById("chart-labels").innerHTML=recent.map(([d,v])=>`<div style="text-align:center"><div style="font-size:10px;color:var(--text3)">${new Date(d+"T12:00:00").toLocaleDateString("fr-FR",{day:"numeric",month:"short"})}</div><div style="font-size:11px;font-weight:700;color:var(--green)">${v}</div></div>`).join("");
+
+  const diff=(pe[pe.length-1][1]-pe[0][1]).toFixed(1);
+  const pi=document.getElementById("perte-info");
+  pi.textContent=parseFloat(diff)<0?"📉 "+diff+" kg depuis le début":"📈 +"+diff+" kg depuis le début";
+  pi.style.color=parseFloat(diff)<0?"var(--green)":"#e8a94a";
+
+  document.getElementById("poids-history").innerHTML=[...pe].reverse().slice(0,8).map(([d,v],i,arr)=>{
+    const prev=arr[i+1]?.[1];const diff2=prev?(v-prev).toFixed(1):null;
+    return`<div class="ph-row"><span class="ph-date">${new Date(d+"T12:00:00").toLocaleDateString("fr-FR",{weekday:"short",day:"numeric",month:"short"})}</span><span class="ph-val">${v} kg</span>${diff2?`<span style="font-size:11px;color:${parseFloat(diff2)<0?"var(--green)":"#e06060"}">${parseFloat(diff2)<0?diff2:"+"+diff2}</span>`:""}</div>`;
+  }).join("");
+}
+
+function bilanPoids(){
+  const pe=Object.entries(state.poidsLog).sort((a,b)=>a[0].localeCompare(b[0]));
+  const info=pe.length>=2?"Poids début: "+pe[0][1]+"kg, actuel: "+pe[pe.length-1][1]+"kg":"";
+  openCoach("Fais-moi un bilan de mon suivi de poids et donne-moi des conseils pour continuer à perdre du poids. "+info);
+}
+
+// ── PROFIL ─────────────────────────────────────────────────────
+function loadProfil(){
+  const p=state.profil;
+  document.getElementById("p-prenom").value=p.prenom||"";
+  document.getElementById("p-poids").value=p.poids||"";
+  document.getElementById("p-obj").value=p.objectif||"";
+  document.getElementById("p-menus").value=p.menus||"";
+  renderTags("tags-cuisine",CUISINE_TAGS,"cuisine");
+  renderTags("tags-restrict",RESTRICT_TAGS,"restrict");
+}
+function renderTags(id,tags,key){
+  document.getElementById(id).innerHTML=tags.map(v=>`<span class="tag ${(state.profil[key]||[]).includes(v)?"on":""}" onclick="toggleTag('${key}','${v}',this)">${v}</span>`).join("");
+}
+function toggleTag(key,val,el){
+  const arr=state.profil[key]||[];
+  state.profil[key]=arr.includes(val)?arr.filter(x=>x!==val):[...arr,val];
+  el.classList.toggle("on");
+}
+function saveProfil(){
+  state.profil.prenom=document.getElementById("p-prenom").value;
+  state.profil.poids=document.getElementById("p-poids").value;
+  state.profil.objectif=document.getElementById("p-obj").value;
+  state.profil.menus=document.getElementById("p-menus").value;
+  save();
+  if(state.profil.prenom)document.getElementById("sub-title").textContent="Bonjour "+state.profil.prenom+" 👋";
+  if(state.profil.poids)document.getElementById("poids-badge").textContent="⚖️ "+state.profil.poids+" kg";
+  initCoach();
+  alert("Profil sauvegardé !");
+}
+
+// ── INIT ───────────────────────────────────────────────────────
+load();
+initCoach();
+renderGuide();
+renderPoids();
+if(state.profil.prenom)document.getElementById("sub-title").textContent="Bonjour "+state.profil.prenom+" 👋";
+if(state.profil.poids)document.getElementById("poids-badge").textContent="⚖️ "+state.profil.poids+" kg";
+</script>
+</body>
+</html>
